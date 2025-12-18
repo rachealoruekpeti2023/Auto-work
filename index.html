@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>F&G Auto Troubleshooter</title>
+  <meta name="description" content="F&G Auto Troubleshooter – Diagnose car problems, decode VIN, match exact-fit parts, and order spare parts." />
+  <meta name="keywords" content="auto troubleshooter, car diagnostics, VIN decoder, spare parts, mechanic, vehicle repair" />
+  <meta name="author" content="F&G Auto Troubleshooter" />
+
+  <meta property="og:title" content="F&G Auto Troubleshooter" />
+  <meta property="og:description" content="Diagnose vehicle issues, decode VIN, match exact parts and order globally." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/icons/logo.png" />
+
+  <link rel="icon" href="assets/icons/favicon.ico" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b0f14" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img src="assets/icons/logo.png" alt="F&G Auto Troubleshooter" class="logo-img" />
+      <div>
+        <h1>F&G Auto Troubleshooter</h1>
+        <p class="sub">Diagnose • Decode VIN • Match parts • Order</p>
+      </div>
+    </div>
+
+    <div class="header-tools">
+      <div class="field compact">
+        <label>Theme</label>
+        <button id="themeToggle" class="btn ghost" type="button">Toggle</button>
+      </div>
+      <div class="field compact">
+        <label>Currency</label>
+        <select id="currencySelect"></select>
+      </div>
+      <div class="field compact">
+        <label>Language</label>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="ar">العربية</option>
+        </select>
+      </div>
+      <div class="pill">
+        <span id="tierBadge">Tier: FREE</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn" data-view="troubleshooter" aria-current="page">Troubleshooter</button>
+      <button class="nav-btn" data-view="parts">Spare Parts</button>
+      <button class="nav-btn" data-view="orders">Cart &amp; Order</button>
+      <button class="nav-btn" data-view="mechanics">Mechanics</button>
+      <button class="nav-btn" data-view="onboarding">Onboarding</button>
+      <button class="nav-btn" data-view="pricing">Pricing</button>
+      <button class="nav-btn" data-view="admin">Admin</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- TROUBLESHOOTER -->
+    <section id="view-troubleshooter" class="view">
+      <div class="panel">
+        <h2>Troubleshooter</h2>
+        <p class="hint">Search a symptom or describe it in your own words.</p>
+
+        <div class="panel" style="margin-top:10px">
+          <h3>AI Symptom Input</h3>
+          <div class="field">
+            <label for="aiSymptomText">Describe your problem</label>
+            <textarea id="aiSymptomText" rows="3" placeholder="Example: overheating in traffic, fan not working, coolant low..."></textarea>
+          </div>
+          <div class="row wrap">
+            <button id="aiAnalyzeBtn" class="btn" type="button">Analyze</button>
+            <span id="aiAnalyzeResult" class="muted small"></span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="symptomSearch">Search symptoms</label>
+            <input id="symptomSearch" type="text" placeholder="e.g., won’t start, overheating, brake noise..." />
+          </div>
+          <div class="field">
+            <label for="categorySelect">Category</label>
+            <select id="categorySelect"></select>
+          </div>
+        </div>
+
+        <div id="symptomResults" class="cards"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Guided Diagnosis</h3>
+        <div id="wizard" class="wizard">
+          <div class="wizard-empty">
+            <p>Select a symptom to begin.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>VIN Decoder</h3>
+        <p class="hint">Decode vehicle info and enable exact-fit parts matching.</p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="vinInput">VIN (17 characters)</label>
+            <input id="vinInput" placeholder="Enter VIN..." />
+          </div>
+          <div class="field">
+            <label for="vinYear">Model Year (optional)</label>
+            <input id="vinYear" type="number" placeholder="e.g., 2016" />
+          </div>
+        </div>
+
+        <div class="row wrap">
+          <button id="vinDecodeBtn" class="btn secondary" type="button">Decode VIN</button>
+          <span id="vinStatus" class="muted small"></span>
+        </div>
+
+        <div id="vinResult" class="result" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- PARTS -->
+    <section id="view-parts" class="view hidden">
+      <div class="panel">
+        <div class="row space-between wrap">
+          <div>
+            <h2>Spare Parts</h2>
+            <p class="hint">Filter, add to cart, and place an order.</p>
+          </div>
+          <div class="pill">
+            <span id="cartCount">0</span> item(s) in cart
+          </div>
+        </div>
+
+        <div class="row wrap" style="margin-top:10px">
+          <span class="badge" id="fitmentBadge">Fitment: Not set</span>
+          <label class="badge" style="cursor:pointer">
+            <input type="checkbox" id="fitmentOnlyToggle" style="margin-right:8px" />
+            Show only parts that fit my VIN
+          </label>
+        </div>
+
+        <div class="grid-3">
+          <div class="field">
+            <label for="partSearch">Search parts</label>
+            <input id="partSearch" type="text" placeholder="e.g., spark plug, air filter, brake pad..." />
+          </div>
+          <div class="field">
+            <label for="partCategorySelect">Part category</label>
+            <select id="partCategorySelect"></select>
+          </div>
+          <div class="field">
+            <label for="sortSelect">Sort</label>
+            <select id="sortSelect">
+              <option value="relevance">Relevance</option>
+              <option value="priceAsc">Price: Low → High</option>
+              <option value="priceDesc">Price: High → Low</option>
+              <option value="nameAsc">Name: A → Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="partsGrid" class="cards"></div>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section id="view-orders" class="view hidden">
+      <div class="panel">
+        <h2>Cart &amp; Order</h2>
+
+        <div class="row wrap" style="margin:8px 0">
+          <button id="invoiceBtn" class="btn ghost">Download Invoice (PDF/Print)</button>
+        </div>
+
+        <div id="cartList" class="cart"></div>
+
+        <div class="divider"></div>
+
+        <h3>Customer details</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label for="custName">Full name</label>
+            <input id="custName" type="text" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="custPhone">Phone (WhatsApp)</label>
+            <input id="custPhone" type="tel" placeholder="+234..." />
+          </div>
+          <div class="field">
+            <label for="custLocation">Location / City</label>
+            <input id="custLocation" type="text" placeholder="e.g., Lagos, Abuja..." />
+          </div>
+          <div class="field">
+            <label for="vehicleInfo">Vehicle (optional)</label>
+            <input id="vehicleInfo" type="text" placeholder="e.g., Toyota Corolla 2010, engine 1.8..." />
+          </div>
+          <div class="field">
+            <label for="vinPlate">VIN / Plate Number</label>
+            <input id="vinPlate" placeholder="VIN or Plate Number" />
+          </div>
+          <div class="field">
+            <label for="partPhoto">Upload Part Photo(s) (optional)</label>
+            <input id="partPhoto" type="file" accept="image/*" multiple />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="custNotes">Notes (optional)</label>
+          <textarea id="custNotes" rows="3" placeholder="VIN, part photos, urgency, etc."></textarea>
+        </div>
+
+        <div class="row space-between wrap">
+          <div class="totals">
+            <div class="line">
+              <span>Subtotal</span>
+              <strong id="subtotal">₦0</strong>
+            </div>
+            <div class="small">Delivery fees depend on location (confirmed on chat).</div>
+          </div>
+
+          <div class="actions">
+            <button id="clearCartBtn" class="btn ghost">Clear cart</button>
+            <button id="whatsappBtn" class="btn">Order via WhatsApp</button>
+            <button id="emailBtn" class="btn secondary">Order via Email</button>
+            <button id="paystackBtn" class="btn">Pay with Paystack</button>
+            <button id="stripeBtn" class="btn secondary">Pay with Stripe</button>
+          </div>
+        </div>
+
+        <p class="small muted">Photos cannot be auto-attached by browsers. For Email orders, your email app will open—attach selected photos before sending. For WhatsApp orders, send photos after chat opens.</p>
+      </div>
+    </section>
+
+    <!-- MECHANICS -->
+    <section id="view-mechanics" class="view hidden">
+      <div class="panel">
+        <h2>Verified Mechanics</h2>
+        <p class="hint">Connect with mechanics by specialty and location.</p>
+        <div id="mechanicList" class="cards"></div>
+      </div>
+    </section>
+
+    <!-- ONBOARDING -->
+    <section id="view-onboarding" class="view hidden">
+      <div class="panel">
+        <h2>Dealer / Mechanic Onboarding</h2>
+        <p class="hint">Apply to be listed and receive customer leads.</p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Type</label>
+            <select id="onbType">
+              <option value="Mechanic">Mechanic</option>
+              <option value="Dealer">Parts Dealer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Business Name</label>
+            <input id="onbName" placeholder="Business name" />
+          </div>
+          <div class="field">
+            <label>City / Location</label>
+            <input id="onbLocation" placeholder="City" />
+          </div>
+          <div class="field">
+            <label>Phone / WhatsApp</label>
+            <input id="onbPhone" placeholder="+234..." />
+          </div>
+          <div class="field">
+            <label>Specialty</label>
+            <input id="onbSpecialty" placeholder="Engine, Electrical, AC, etc." />
+          </div>
+          <div class="field">
+            <label>Years of Experience</label>
+            <input id="onbYears" type="number" placeholder="e.g., 5" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Notes / Coverage</label>
+          <textarea id="onbNotes" rows="3" placeholder="Brands serviced, areas covered, delivery options..."></textarea>
+        </div>
+
+        <div class="row wrap">
+          <button id="onbSubmit" class="btn" type="button">Submit Application</button>
+          <button id="onbWhatsApp" class="btn secondary" type="button">Submit via WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="view-pricing" class="view hidden">
+      <div class="panel">
+        <h2>Monetization Tiers</h2>
+        <p class="hint">Static-friendly tiers: pay via links, then activate with a code.</p>
+        <div id="pricingGrid" class="cards"></div>
+
+        <div class="divider"></div>
+        <h3>Activate Plan</h3>
+        <div class="row wrap">
+          <input id="tierCode" placeholder="Enter access code (e.g., FG-PRO-2026)" style="flex:1" />
+          <button id="activateTier" class="btn" type="button">Activate</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="view-admin" class="view hidden">
+      <div class="panel">
+        <h2>Admin</h2>
+        <p class="hint">Local admin tools (stored in your browser). Use Business tier for full tools.</p>
+
+        <div class="row wrap">
+          <button class="btn secondary" id="adminTabInventory" type="button">Inventory Editor</button>
+          <button class="btn secondary" id="adminTabFitment" type="button">Fitment Builder</button>
+          <button class="btn secondary" id="adminTabExport" type="button">Export/Import</button>
+        </div>
+
+        <div id="adminInventory" class="panel" style="margin-top:12px">
+          <h3>Inventory Editor</h3>
+          <textarea id="inventoryEditor" rows="14"></textarea>
+          <div class="row wrap" style="margin-top:10px">
+            <button class="btn" id="saveInventory" type="button">Save Inventory</button>
+            <button class="btn ghost" id="resetInventory" type="button">Reset Inventory</button>
+          </div>
+          <p class="small muted">Edits are stored in your browser. To make changes permanent on GitHub, update data.js.</p>
+        </div>
+
+        <div id="adminFitment" class="panel hidden" style="margin-top:12px">
+          <h3>Fitment Builder</h3>
+          <p class="hint">Create a vehicle key and select the exact parts that fit. Add OEM part numbers per part.</p>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Make</label>
+              <input id="fitMake" placeholder="TOYOTA" />
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input id="fitModel" placeholder="COROLLA" />
+            </div>
+            <div class="field">
+              <label>Year</label>
+              <input id="fitYear" type="number" placeholder="2010" />
+            </div>
+            <div class="field">
+              <label>Engine (e.g., 1.8)</label>
+              <input id="fitEngine" placeholder="1.8" />
+            </div>
+          </div>
+
+          <div class="row wrap">
+            <button id="loadFromDecoded" class="btn secondary" type="button">Use Decoded VIN</button>
+            <button id="loadFitmentKey" class="btn secondary" type="button">Load Existing</button>
+            <button id="saveFitmentKey" class="btn" type="button">Save Fitment</button>
+            <button id="deleteFitmentKey" class="btn ghost" type="button">Delete Fitment</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field">
+            <label>Existing Keys</label>
+            <select id="fitmentKeySelect"></select>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="fitmentPartsList" class="cards"></div>
+        </div>
+
+        <div id="adminExport" class="panel hidden" style="margin-top:12px">
+          <h3>Export / Import</h3>
+          <div class="row wrap">
+            <button id="downloadCustomData" class="btn" type="button">Download Custom Data (JSON)</button>
+            <label class="btn secondary" style="cursor:pointer">
+              Import Custom Data (JSON)
+              <input id="importCustomData" type="file" accept="application/json" style="display:none" />
+            </label>
+            <button id="resetCustomData" class="btn ghost" type="button">Reset Custom Data</button>
+          </div>
+          <p class="small muted">Custom data includes inventory edits + fitment edits, stored in your browser.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> F&G Auto Troubleshooter</span>
+      <span class="muted">GitHub Pages • PWA Ready</span>
+    </div>
+  </footer>
+
+  <!-- Chatbot -->
+  <button id="chatFab" class="chat-fab" type="button">Chat</button>
+  <div id="chatWidget" class="chat hidden">
+    <div class="chat-header">
+      <strong>F&G Assistant</strong>
+      <button id="chatClose" class="btn ghost" type="button">✕</button>
+    </div>
+    <div id="chatLog" class="chat-log"></div>
+    <div class="chat-input">
+      <input id="chatText" placeholder="Ask about symptoms, parts, VIN, ordering..." />
+      <button id="chatSend" class="btn" type="button">Send</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
